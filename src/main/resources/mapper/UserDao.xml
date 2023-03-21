@@ -1,0 +1,241 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ygx.cattleranchmanagement.dao.UserDao">
+
+    <resultMap id="BaseResultMap" type="com.ygx.cattleranchmanagement.entity.User">
+        <!--@Table user-->
+        <result property="userId" column="user_id" jdbcType="INTEGER"/>
+        <result property="account" column="account" jdbcType="INTEGER"/>
+        <result property="password" column="password" jdbcType="VARCHAR"/>
+        <result property="name" column="name" jdbcType="VARCHAR"/>
+        <result property="gender" column="gender" jdbcType="VARCHAR"/>
+        <result property="birthday" column="birthday" jdbcType="VARCHAR"/>
+        <result property="telephoneNumber" column="telephone_number" jdbcType="VARCHAR"/>
+        <result property="registerDate" column="register_date" jdbcType="VARCHAR"/>
+        <result property="email" column="email" jdbcType="VARCHAR"/>
+        <result property="state" column="state" jdbcType="VARCHAR"/>
+        <result property="photo" column="photo" jdbcType="VARCHAR"/>
+        <result property="note" column="note" jdbcType="VARCHAR"/>
+        <result property="deleted" column="deleted" jdbcType="INTEGER"/>
+    </resultMap>
+
+    <!--查询单个-->
+    <select id="queryById" resultMap="BaseResultMap">
+        select
+          user_id, account, password, name, gender, birthday, telephone_number, register_date, email, state, photo, note, deleted
+        from user
+        where user_id = #{userId} and deleted != 1
+    </select>
+
+    <!--查询指定行数据-->
+    <select id="queryAllByLimit" resultMap="BaseResultMap">
+        select
+          user_id, account, password, name, gender, birthday, telephone_number, register_date, email, state, photo, note, deleted
+        from user
+        <where>
+            <if test="userId != null">
+                and user_id = #{userId}
+            </if>
+            <if test="account != null">
+                and account = #{account}
+            </if>
+            <if test="password != null and password != ''">
+                and password = #{password}
+            </if>
+            <if test="name != null and name != ''">
+                and name = #{name}
+            </if>
+            <if test="gender != null and gender != ''">
+                and gender = #{gender}
+            </if>
+            <if test="birthday != null and birthday != ''">
+                and birthday = #{birthday}
+            </if>
+            <if test="telephoneNumber != null and telephoneNumber != ''">
+                and telephone_number = #{telephoneNumber}
+            </if>
+            <if test="registerDate != null">
+                and register_date = #{registerDate}
+            </if>
+            <if test="email != null and email != ''">
+                and email = #{email}
+            </if>
+            <if test="state != null and state != ''">
+                and state = #{state}
+            </if>
+            <if test="photo != null and photo != ''">
+                and photo = #{photo}
+            </if>
+            <if test="note != null and note != ''">
+                and note = #{note}
+            </if>
+            <if test="deleted != null">
+                and deleted = #{deleted}
+            </if>
+        </where>
+        limit #{pageable.offset}, #{pageable.pageSize}
+    </select>
+
+    <!--通过实体作为筛选条件查询-->
+    <select id="queryAll" resultMap="BaseResultMap">
+        select
+          user_id, account, password, name, gender, birthday, telephone_number, register_date, email, state, photo, note, deleted
+        from ranch_system.user where deleted != 1
+    </select>
+
+    <!--统计总行数-->
+    <select id="count" resultType="java.lang.Long">
+        select count(1)
+        from user
+        <where>
+            <if test="userId != null">
+                and user_id = #{userId}
+            </if>
+            <if test="account != null">
+                and account = #{account}
+            </if>
+            <if test="password != null and password != ''">
+                and password = #{password}
+            </if>
+            <if test="name != null and name != ''">
+                and name = #{name}
+            </if>
+            <if test="gender != null and gender != ''">
+                and gender = #{gender}
+            </if>
+            <if test="birthday != null and birthday != ''">
+                and birthday = #{birthday}
+            </if>
+            <if test="telephoneNumber != null and telephoneNumber != ''">
+                and telephone_number = #{telephoneNumber}
+            </if>
+            <if test="registerDate != null">
+                and register_date = #{registerDate}
+            </if>
+            <if test="email != null and email != ''">
+                and email = #{email}
+            </if>
+            <if test="state != null and state != ''">
+                and state = #{state}
+            </if>
+            <if test="photo != null and photo != ''">
+                and photo = #{photo}
+            </if>
+            <if test="note != null and note != ''">
+                and note = #{note}
+            </if>
+            <if test="deleted != null">
+                and deleted = #{deleted}
+            </if>
+        </where>
+    </select>
+
+    <!--新增所有列-->
+    <insert id="insert" keyProperty="userId" useGeneratedKeys="true">
+        insert into user(account, password, name, gender, birthday, telephone_number, register_date, email, state, photo, note, deleted)
+        values (#{account}, #{password}, #{name}, #{gender}, #{birthday}, #{telephoneNumber}, #{registerDate}, #{email}, #{state}, #{photo}, #{note}, #{deleted})
+    </insert>
+
+    <insert id="insertBatch" keyProperty="userId" useGeneratedKeys="true">
+        insert into user(account, password, name, gender, birthday, telephone_number, register_date, email, state, photo, note, deleted)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+        (#{entity.account}, #{entity.password}, #{entity.name}, #{entity.gender}, #{entity.birthday}, #{entity.telephoneNumber}, #{entity.registerDate}, #{entity.email}, #{entity.state}, #{entity.photo}, #{entity.note}, #{entity.deleted})
+        </foreach>
+    </insert>
+
+    <insert id="insertOrUpdateBatch" keyProperty="userId" useGeneratedKeys="true">
+        insert into user(account, password, name, gender, birthday, telephone_number, register_date, email, state, photo, note, deleted)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+            (#{entity.account}, #{entity.password}, #{entity.name}, #{entity.gender}, #{entity.birthday}, #{entity.telephoneNumber}, #{entity.registerDate}, #{entity.email}, #{entity.state}, #{entity.photo}, #{entity.note}, #{entity.deleted})
+        </foreach>
+        on duplicate key update
+        account = values(account),
+        password = values(password),
+        name = values(name),
+        gender = values(gender),
+        birthday = values(birthday),
+        telephone_number = values(telephone_number),
+        register_date = values(register_date),
+        email = values(email),
+        state = values(state),
+        photo = values(photo),
+        note = values(note),
+        deleted = values(deleted)
+    </insert>
+
+    <!--通过主键修改数据-->
+    <update id="update">
+        update user
+        <set>
+            <if test="account != null">
+                account = #{account},
+            </if>
+            <if test="password != null and password != ''">
+                password = #{password},
+            </if>
+            <if test="name != null and name != ''">
+                name = #{name},
+            </if>
+            <if test="gender != null and gender != ''">
+                gender = #{gender},
+            </if>
+            <if test="birthday != null and birthday != ''">
+                birthday = #{birthday},
+            </if>
+            <if test="telephoneNumber != null and telephoneNumber != ''">
+                telephone_number = #{telephoneNumber},
+            </if>
+            <if test="registerDate != null">
+                register_date = #{registerDate},
+            </if>
+            <if test="email != null and email != ''">
+                email = #{email},
+            </if>
+            <if test="state != null and state != ''">
+                state = #{state},
+            </if>
+            <if test="photo != null and photo != ''">
+                photo = #{photo},
+            </if>
+            <if test="note != null and note != ''">
+                note = #{note},
+            </if>
+            <if test="deleted != null">
+                deleted = #{deleted},
+            </if>
+        </set>
+        where user_id = #{userId} and deleted != 1
+    </update>
+
+    <!--通过主键删除(此处使用逻辑删除)-->
+    <delete id="deleteById">
+        update user
+        set deleted = 1
+        where user_id = #{userId}
+    </delete>
+
+    <!--  通过账号和密码登录  -->
+    <select id="login" resultMap="BaseResultMap">
+        select
+            user_id, account, password, name, gender, birthday, telephone_number, register_date, email, state, photo, note, deleted
+        from user
+        where account = #{account} and deleted != 1
+    </select>
+
+    <!--根据名字查询单个-->
+    <select id="queryByName" resultMap="BaseResultMap">
+        select
+            user_id, account, password, name, gender, birthday, telephone_number, register_date, email, state, photo, note, deleted
+        from user
+        where name like #{name} and deleted != 1
+    </select>
+
+    <select id="queryHistoricalUsers" resultMap="BaseResultMap">
+        select
+            user_id, account, password, name, gender, birthday, telephone_number, register_date, email, state, photo, note, deleted
+        from ranch_system.user
+    </select>
+</mapper>
+
